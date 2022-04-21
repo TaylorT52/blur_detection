@@ -1,4 +1,4 @@
-# Blure Detection
+# Blur Detection
 
 ## Setup
 To install, please ensure you have python 3.9.1 or later!
