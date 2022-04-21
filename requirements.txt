@@ -1,0 +1,6 @@
+###### Requirements without Version Specifiers ######
+opencv-python
+
+# these are only used for curve fitting!
+scipy
+matplotlib

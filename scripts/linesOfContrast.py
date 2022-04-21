@@ -1,0 +1,162 @@
+import cv2
+import numpy as np
+from scipy.signal import find_peaks
+from scipy.stats import skew
+from matplotlib import pyplot as plt
+
+if __name__ == "__main__":
+    ASnoBlur = 0
+    fails_no_blur = [
+        "../sample_images/not_blurry/frame-06-02-2018-03-10-50.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-12-13.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-12-21.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-12-40.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-12-44.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-13-14.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-13-17.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-13-21.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-13-48.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-14-01.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-14-06.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-14-53.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-15-39.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-16-35.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-16-47.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-16-52.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-17-10.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-17-16.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-17-26.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-17-43.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-17-46.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-17-53.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-18-17.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-18-29.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-18-34.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-18-37.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-18-40.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-18-42.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-18-45.jpg",
+        "../sample_images/not_blurry/frame-10-02-2022-13-21-50.jpg",
+        "../sample_images/not_blurry/frame-10-02-2022-13-21-56.jpg",
+        "../sample_images/not_blurry/frame-10-02-2022-13-22-00.jpg",
+        "../sample_images/not_blurry/frame-10-02-2022-13-22-21.jpg",
+        "../sample_images/not_blurry/frame-10-02-2022-13-23-08.jpg",
+        "../sample_images/not_blurry/frame-10-02-2022-13-23-11.jpg",
+        "../sample_images/not_blurry/frame-10-02-2022-13-23-18.jpg",
+        "../sample_images/not_blurry/frame-10-02-2022-13-23-24.jpg",
+        "../sample_images/not_blurry/frame-10-02-2022-13-23-55.jpg",
+        "../sample_images/not_blurry/frame-10-02-2022-13-24-18.jpg",
+        "../sample_images/not_blurry/frame-10-02-2022-13-24-36.jpg",
+        "../sample_images/not_blurry/frame-10-02-2022-13-24-47.jpg",
+        "../sample_images/not_blurry/frame-10-02-2022-13-25-04.jpg",
+        "../sample_images/not_blurry/frame-10-02-2022-13-25-19.jpg",
+        "../sample_images/not_blurry/frame-10-02-2022-13-25-29.jpg",
+        "../sample_images/not_blurry/frame-10-02-2022-13-25-35.jpg",
+        "../sample_images/not_blurry/frame-21-01-2022-15-49-20.jpg"]
+    fails_blur = ["frame-06-02-2018-03-08-20.jpg", 
+        "../sample_images/not_blurry/frame-06-02-2018-03-19-37.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-19-41.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-19-47.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-11-11.jpg", 
+        "../sample_images/not_blurry/frame-06-02-2018-03-19-54.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-11-16.jpg", 
+        "../sample_images/not_blurry/frame-06-02-2018-03-19-59.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-11-37.jpg", 
+        "../sample_images/not_blurry/frame-06-02-2018-03-20-05.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-11-53.jpg", 
+        "../sample_images/not_blurry/frame-06-02-2018-03-20-15.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-12-27.jpg", 
+        "../sample_images/not_blurry/frame-06-02-2018-03-20-23.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-12-48.jpg", 
+        "../sample_images/not_blurry/frame-10-02-2022-13-21-37.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-12-54.jpg", 
+        "../sample_images/not_blurry/frame-10-02-2022-13-22-25.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-13-01.jpg", 
+        "../sample_images/not_blurry/frame-10-02-2022-13-22-28.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-13-30.jpg", 
+        "../sample_images/not_blurry/frame-10-02-2022-13-22-31.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-13-34.jpg", 
+        "../sample_images/not_blurry/frame-10-02-2022-13-22-35.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-14-14.jpg", 
+        "../sample_images/not_blurry/frame-10-02-2022-13-22-41.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-14-29.jpg", 
+        "../sample_images/not_blurry/frame-10-02-2022-13-22-47.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-14-33.jpg", 
+        "../sample_images/not_blurry/frame-10-02-2022-13-22-54.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-14-36.jpg", 
+        "../sample_images/not_blurry/frame-10-02-2022-13-23-00.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-14-41.jpg", 
+        "../sample_images/not_blurry/frame-10-02-2022-13-23-03.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-14-47.jpg", 
+        "../sample_images/not_blurry/frame-10-02-2022-13-23-14.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-14-57.jpg", 
+        "../sample_images/not_blurry/frame-10-02-2022-13-24-03.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-15-00.jpg", 
+        "../sample_images/not_blurry/frame-10-02-2022-13-24-13.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-15-04.jpg", 
+        "../sample_images/not_blurry/frame-10-02-2022-13-24-22.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-15-23.jpg", 
+        "../sample_images/not_blurry/frame-10-02-2022-13-24-30.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-16-31.jpg", 
+        "../sample_images/not_blurry/frame-10-02-2022-13-25-45.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-16-39.jpg", 
+        "../sample_images/not_blurry/frame-10-02-2022-13-25-52.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-16-43.jpg", 
+        "../sample_images/not_blurry/frame-10-02-2022-13-26-03.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-16-56.jpg", 
+        "../sample_images/not_blurry/frame-10-02-2022-13-26-09.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-17-29.jpg", 
+        "../sample_images/not_blurry/frame-10-02-2022-13-26-24.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-17-33.jpg", 
+        "../sample_images/not_blurry/frame-21-01-2022-15-49-30.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-17-37.jpg", 
+        "../sample_images/not_blurry/frame-21-01-2022-15-49-34.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-17-40.jpg", 
+        "../sample_images/not_blurry/frame-21-01-2022-15-49-46.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-18-52.jpg", 
+        "../sample_images/not_blurry/frame-21-01-2022-15-49-55.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-19-32.jpg", 
+        "../sample_images/not_blurry/frame-21-01-2022-15-50-00.jpg"]
+    failsDistributions = [
+        "../sample_images/not_blurry/frame-06-02-2018-03-17-10.jpg",
+        "../sample_images/not_blurry/frame-06-02-2018-03-17-16.jpg",
+        "../sample_images/not_blurry/frame-10-02-2022-13-21-50.jpg"]
+
+    for fail in failsDistributions:
+        text = fail
+        img = cv2.imread(text, 0)
+        # global thresholding
+        ret1, th1 = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
+        # Otsu's thresholding
+        ret2, th2 = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        # Otsu's thresholding after Gaussian filtering
+        blur = cv2.GaussianBlur(img, (5, 5), 0)
+        ret3, th3 = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+        # plot all the images and their histograms
+        images = [img, 0, th1,
+                  img, 0, th2,
+                  blur, 0, th3]
+        titles = ['Original Noisy Image', 'Histogram', 'Global Thresholding (v=127)',
+                  'Original Noisy Image', 'Histogram', "Otsu's Thresholding",
+                  'Gaussian filtered Image', 'Histogram', "Otsu's Thresholding"]
+
+        hist = cv2.calcHist([blur], [0], None, [256], [0, 256])
+        print("Skew" + str(skew(hist)))
+        ASnoBlur = ASnoBlur + skew(hist)
+        print()
+
+        for i in range(3):
+            plt.subplot(3, 3, i * 3 + 1), plt.imshow(images[i * 3], 'gray')
+            plt.title(titles[i * 3]), plt.xticks([]), plt.yticks([])
+            plt.subplot(3, 3, i * 3 + 2), plt.hist(images[i * 3].ravel(), 256)
+            plt.title(titles[i * 3 + 1]), plt.xticks([]), plt.yticks([])
+            plt.subplot(3, 3, i * 3 + 3), plt.imshow(images[i * 3 + 2], 'gray')
+            plt.title(titles[i * 3 + 2]), plt.xticks([]), plt.yticks([])
+
+        print("click the close window icon to show next image set")
+        plt.show()
+
+    avgASNoBlur = ASnoBlur / len(fails_no_blur)
+    print("average skew: " + str(avgASNoBlur))
+
